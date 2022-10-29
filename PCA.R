@@ -1,0 +1,30 @@
+library(tidyverse)
+library(mlr)
+jiechangai<-read.csv("D:/结肠样品/中山大学-结肠样品/chuli/positive表.csv",header=TRUE,stringsAsFactors = FALSE)
+#将数据按Class分类
+jiechangai$Class[jiechangai$Class=="V"]<-1
+jiechangai$Class[jiechangai$Class=="C"]<-0
+jiechangai$Class<-factor(jiechangai$Class,
+                         levels=c(0,1),
+                         labels = c("yes","no"))
+jiechangaiTib<-as_tibble(jiechangai)
+pca<-select(jiechangaiTib,-Class)%>%
+  prcomp(center=TRUE,scale=TRUE)
+pca
+summary(pca)#分离得并不好PC30才达到80%
+#计算变量负载
+map_dfc(1:6,~pca$rotation[,.]*sqrt(pca$sdev^2)[.])
+#碎石图
+install.packages("factoextra")
+library(factoextra)
+pcaDat<-get_pca(pca)
+fviz_pca_var(pca)
+fviz_screeplot(pca,addlabels=TRUE,choice="eigenvalue")
+fviz_screeplot(pca,addlabels=TRUE,choice="variance")
+#二维PCA图
+jiechangaiPca<-jiechangaiTib%>%
+  mutate(PCA1=pca$x[,1],PCA2=pca$x[,2])
+ggplot(jiechangaiPca,aes(x=PCA1,y=PCA2,col=Class))+
+  geom_point()+
+  stat_ellipse()+
+  theme_bw()
