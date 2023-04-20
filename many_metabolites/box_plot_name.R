@@ -1,8 +1,8 @@
 library(ggplot2)
 library(ggpubr)
 getwd()
-setwd("D:/R_work/Using-R-for-Visualizing/met_pic/name")
-metabolites<-read.csv("D:/作业/pathway处理/All of the samples.csv",row.names=1,header=1, check.names = F)#check.names = F 防止数字开头的文件名乱码
+setwd("D:/R_work/Using-R-for-Visualizing/many_metabolites")
+metabolites<-read.csv("All of the samples.csv",row.names=1,header=1, check.names = F)#check.names = F 防止数字开头的文件名乱码
 dim(metabolites)[2]
 
 
@@ -34,7 +34,7 @@ for(i in 3:dim(metabolite)[2])
 #要做显著性检验的组
 my_comparisons <- list( c("0mM LG","2.5mM LG"), c("10mM LG","10mM LG + 20uM A9"),c("1mM LG","1mM LG + 20uM A9"),
                         c("10mM LG","2.5mM LG"),c("2.5mM LG","2.5mM LG + 20uM A9"),c("10mM LG","25mM LG"),c("0mM LG","25mM LG"))
-
+setwd("D:/R_work/Using-R-for-Visualizing/met_pic/name")
 for(i in 3:dim(metabolite)[2])
 {
   title_name = colnames(metabolite[i])
