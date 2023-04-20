@@ -1,5 +1,6 @@
 library(ggplot2)
 library(ggpubr)
+library(scales)
 getwd()
 setwd("D:/R_work/Using-R-for-Visualizing/met_pic")
 metabolites<-read.csv("D:/作业/pathway处理/All of the samples.csv",row.names=1,header=1, check.names = F)#check.names = F 防止数字开头的文件名乱码
@@ -27,6 +28,12 @@ for(i in 3:dim(metabolite)[2])
 {
   metabolite[,i]<-metabolite[,i]/metabolite$Protein
 }
+#中心化 归一化
+for(i in 3:dim(metabolite)[2])
+{
+  metabolite[,i]<-scale(metabolite[,i],center = TRUE,scale = TRUE)
+}
+
 
 #要做显著性检验的组
 my_comparisons <- list( c("0mM LG","2.5mM LG"), c("10mM LG","10mM LG + 20uM A9"),c("1mM LG","1mM LG + 20uM A9"),
@@ -44,11 +51,13 @@ for(i in 3:dim(metabolite)[2])
                        hide.ns = F,
                        paired = T,
                        aes(label = paste0("p = ", after_stat(p.signif))))+
-    stat_compare_means(label.y = 45)+#加全局anova p值  
+    # stat_compare_means(label.y = 0)+#加全局anova p值  
+    # scale_y_continuous(breaks=seq(-4, 4, 1))+#坐标轴刻度范围 y轴
     theme(legend.title=element_blank(),
-          plot.title = element_text(hjust = 0.5,size = 20, face = "bold"),#标题居中，字体大小为20
-          axis.text=element_text(size=12,face = "bold"),#刻度
-          axis.title.x=element_text(size=14),axis.title.y=element_text(size=14))+#横纵坐标
+          plot.title = element_text(size = 20, color = "blue4",angle = 0,family = "myFont",face = "bold", vjust = 0.5, hjust = 0.5),#标题居中，字体大小为20
+          axis.text=element_text(size=12,color = "grey",angle = 0,family = "myFont",face = "bold", vjust = 0.5, hjust = 0.5),#刻度
+          axis.title.x=element_text(size=14,color = "blue4",angle = 45,family = "myFont",face = "bold", vjust = 0.5, hjust = 0.5),
+          axis.title.y=element_text(size=14,color = "blue4",angle = 45,family = "myFont",face = "bold", vjust = 0.5, hjust = 0.5))+#横纵坐标
     labs(title=title_name,x='Class',y='Abundance')
   print(plot)
   dev.off()

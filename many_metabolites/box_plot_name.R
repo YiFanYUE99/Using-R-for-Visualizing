@@ -23,6 +23,13 @@ for(i in 3:dim(metabolite)[2])
 {
   metabolite[,i]<-metabolite[,i]/metabolite$Protein
 }
+#中心化 归一化
+for(i in 3:dim(metabolite)[2])
+{
+  metabolite[,i]<-scale(metabolite[,i],center = TRUE,scale = TRUE)
+}
+
+
 
 #要做显著性检验的组
 my_comparisons <- list( c("0mM LG","2.5mM LG"), c("10mM LG","10mM LG + 20uM A9"),c("1mM LG","1mM LG + 20uM A9"),
@@ -32,7 +39,7 @@ for(i in 3:dim(metabolite)[2])
 {
   title_name = colnames(metabolite[i])
   png(filename=paste0(title_name ,".png"),#好的批量命名方式paste0
-      width=1200,height=600,units="px",
+      width=2400,height=1200,units="px",
       pointsize = 12)#标签大小
   plot<-ggplot(metabolite,aes(x=Class,y=metabolite[,i],fill=Class))+#以class为标准填充boxplot
     geom_boxplot()+
@@ -40,30 +47,16 @@ for(i in 3:dim(metabolite)[2])
                        hide.ns = F,
                        paired = T,
                        aes(label = paste0("p = ", after_stat(p.signif))))+
-    stat_compare_means(label.y = 45)+#加全局anova p值  
+    stat_compare_means(label.y = 0.1)+#加全局anova p值  ;1.2为纵坐标值
+    scale_y_continuous(breaks=seq(-4, 4, 1))+#坐标轴刻度范围 y轴
     theme(legend.title=element_blank(),
-          plot.title = element_text(hjust = 0.5,size = 20, face = "bold"),#标题居中，字体大小为20
-          axis.text=element_text(size=12,face = "bold"),#刻度
-          axis.title.x=element_text(size=14),axis.title.y=element_text(size=14))+#横纵坐标
+          plot.title = element_text(size = 20, color = "blue4",angle = 0,family = "myFont",face = "bold", vjust = 0.5, hjust = 0.5),#标题居中，字体大小为20
+          axis.text=element_text(size=12,color = "grey",angle = 0,family = "myFont",face = "bold", vjust = 0.5, hjust = 0.5),#刻度
+          axis.title.x=element_text(size=14,color = "blue4",angle = 45,family = "myFont",face = "bold", vjust = 0.5, hjust = 0.5),
+          axis.title.y=element_text(size=14,color = "blue4",angle = 45,family = "myFont",face = "bold", vjust = 0.5, hjust = 0.5))+#横纵坐标
     labs(title=title_name,x='Class',y='Abundance')
   print(plot)
   dev.off()
 }
 
 
-
-# title_name=colnames(metabolites[6])
-# 
-# ggplot(metabolite,aes(x=Class,y=metabolite[,6],fill=Class))+#以class为标准填充boxplot
-#   geom_boxplot()+
-#   stat_compare_means(comparisons = my_comparisons,method = "t.test", 
-#                      hide.ns = F,
-#                      paired = T,
-#                      aes(label = paste0("p = ", after_stat(p.signif))))+
-#   stat_compare_means(label.y = 45)+#加全局anova p值  
-#   theme(legend.title=element_blank(),
-#         plot.title = element_text(hjust = 0.5,size = 20, face = "bold"),#标题居中，字体大小为20
-#         axis.text=element_text(size=12,face = "bold"),#刻度
-#         axis.title.x=element_text(size=14),axis.title.y=element_text(size=14))+#横纵坐标
-#   labs(title=title_name,x='Class',y='Abundance')
-# dev.off()
